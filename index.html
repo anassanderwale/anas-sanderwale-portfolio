@@ -6,6 +6,7 @@
 <title>Anas Sanderwale — Associate Software Engineer</title>
 <meta name="description" content="Portfolio of Anas Sanderwale, Associate Software Engineer specializing in Java, Spring Boot, RESTful APIs, SQL and React." />
 <style>
+
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 .lg-root{
@@ -211,401 +212,513 @@ a.contact-item:hover{background:rgba(255,255,255,.08);transform:translateY(-3px)
   html{scroll-behavior:auto;}
 }
 #root-loading{display:grid;place-items:center;min-height:100vh;color:#9aa3c7;font-family:'Inter',sans-serif;font-size:14px;}
-</style>
 
+
+/* --- polish + new elements (appended) --- */
+.hero-lede{max-width:520px;}
+.project-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.project-domain{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#cdd3ff;background:rgba(124,131,255,.12);border:1px solid rgba(124,131,255,.26);padding:4px 9px;border-radius:999px;}
+.project-name{margin-top:12px;}
+.project-contribs{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:9px;}
+.project-contribs li{display:flex;gap:10px;font-size:13px;line-height:1.55;color:rgba(238,242,255,.8);}
+.project-contribs .tick{margin-top:7px;}
+.contact-lead{font-size:15px;line-height:1.7;color:var(--ink-2);margin-bottom:22px;max-width:640px;}
+.hero-actions .btn svg{flex-shrink:0;}
+
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js" crossorigin></script>
 </head>
 <body>
 <div id="root"><div id="root-loading">Loading portfolio…</div></div>
-
-<script type="text/babel" data-presets="react">
-const { useState, useEffect, useRef, useCallback } = React;
-
-/* ---------- inline icon set (lucide-style, no dependency) ---------- */
-const ICONS = {
-  "mail": (<><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></>),
-  "phone": (<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>),
-  "map-pin": (<><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></>),
-  "arrow-up-right": (<><path d="M7 17 17 7"/><path d="M7 7h10v10"/></>),
-  "copy": (<><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></>),
-  "check": (<path d="M20 6 9 17l-5-5"/>),
-  "code": (<><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></>),
-  "database": (<><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></>),
-  "layers": (<><path d="M12.8 2.2a2 2 0 0 0-1.6 0L2.6 6.1a1 1 0 0 0 0 1.8l8.6 3.9a2 2 0 0 0 1.6 0l8.6-3.9a1 1 0 0 0 0-1.8z"/><path d="m22 12.6-9.2 4.2a2 2 0 0 1-1.6 0L2 12.6"/><path d="m22 17.6-9.2 4.2a2 2 0 0 1-1.6 0L2 17.6"/></>),
-  "wrench": (<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>),
-  "git-branch": (<><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></>),
-  "flask": (<><path d="M14 2v6l5.5 9.5a2 2 0 0 1-1.7 3H6.2a2 2 0 0 1-1.7-3L10 8V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></>),
-  "workflow": (<><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4a3 3 0 0 1 3 3V14"/></>),
-  "award": (<><circle cx="12" cy="8" r="6"/><path d="M8.2 13.9 7 22l5-3 5 3-1.2-8.1"/></>),
-  "trophy": (<><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.2 7 22"/><path d="M14 14.7V17c0 .6.5 1 1 1.2 1.1.6 2 2 2 3.8"/><path d="M18 2H6v7a6 6 0 0 0 12 0z"/></>),
-  "grad-cap": (<><path d="M22 10 12 5 2 10l10 5z"/><path d="M6 12v5c0 1 2 3 6 3s6-2 6-3v-5"/><path d="M22 10v6"/></>),
-  "badge-check": (<><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76z"/><path d="m9 12 2 2 4-4"/></>),
-  "briefcase": (<><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>),
-  "sparkles": (<><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></>),
-  "menu": (<><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></>),
-  "x": (<><path d="M18 6 6 18"/><path d="m6 6 12 12"/></>),
-  "languages": (<><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></>),
-  "server": (<><rect x="2" y="3" width="20" height="8" rx="2"/><rect x="2" y="13" width="20" height="8" rx="2"/><line x1="6" y1="7" x2="6.01" y2="7"/><line x1="6" y1="17" x2="6.01" y2="17"/></>),
-  "monitor": (<><rect x="2" y="3" width="14" height="10" rx="2"/><path d="M2 17h11"/><rect x="16" y="8" width="6" height="13" rx="1.2"/></>),
-  "shield-check": (<><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></>),
-};
-function Icon({ name, size = 18, ...rest }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" {...rest}>
-      {ICONS[name] || null}
-    </svg>
-  );
-}
-const mk = (name) => (props) => <Icon name={name} {...props} />;
-const Mail=mk("mail"), Phone=mk("phone"), MapPin=mk("map-pin"), ArrowUpRight=mk("arrow-up-right"),
-  Copy=mk("copy"), Check=mk("check"), Code2=mk("code"), Database=mk("database"), Layers=mk("layers"),
-  Wrench=mk("wrench"), GitBranch=mk("git-branch"), FlaskConical=mk("flask"), Workflow=mk("workflow"),
-  Award=mk("award"), Trophy=mk("trophy"), GraduationCap=mk("grad-cap"), BadgeCheck=mk("badge-check"),
-  Briefcase=mk("briefcase"), Sparkles=mk("sparkles"), Menu=mk("menu"), X=mk("x"),
-  Languages=mk("languages"), Server=mk("server"), MonitorSmartphone=mk("monitor"), ShieldCheck=mk("shield-check");
-
-/* ---------- content ---------- */
-const PROFILE = {
-  name: "Anas Sanderwale", role: "Associate Software Engineer",
-  tagline: "Java · Spring Boot · RESTful APIs · SQL · React",
-  email: "anassanderwale92@gmail.com", phone: "+91 79965 35193", phoneRaw: "+917996535193",
-  location: "Pune, Maharashtra, India", languages: ["English", "Hindi", "Kannada", "Urdu"],
-  summary: "Associate Software Engineer with over 1.6 years of experience building backend services and RESTful APIs using Java and Spring Boot. Skilled in integrating backend systems with React based frontends and working with SQL databases such as MySQL, PostgreSQL, and Oracle. Experienced in delivering features on live products across restaurant, e-commerce, and ERP domains. Focused on writing clean and reliable code and improving application performance.",
-};
-const STATS = [
-  { value: "3", label: "Flagship Products" },
-  { value: "8+", label: "Core Technologies" },
-  { value: "2", label: "Performance Awards" },
-];
-const HIGHLIGHTS = [
-  { icon: Server, title: "Backend Engineering", text: "Scalable services and components in Java and Spring Boot for enterprise applications." },
-  { icon: Workflow, title: "API Development", text: "Designing and integrating RESTful APIs for clean communication between systems." },
-  { icon: MonitorSmartphone, title: "Frontend Integration", text: "Wiring backend services to React interfaces to ship complete features." },
-  { icon: ShieldCheck, title: "Quality & Delivery", text: "Structured SDLC and Agile delivery with testing, debugging, and code reviews." },
-];
-const SKILLS = [
-  { icon: Code2, label: "Languages", items: ["Java", "SQL", "JavaScript"] },
-  { icon: Layers, label: "Frameworks & Web", items: ["Spring Boot", "React.js", "RESTful APIs", "HTML", "CSS"] },
-  { icon: Database, label: "Databases", items: ["MySQL", "PostgreSQL", "Oracle"] },
-  { icon: FlaskConical, label: "Testing", items: ["Manual Testing", "Selenium"] },
-  { icon: Wrench, label: "Tools", items: ["IntelliJ IDEA", "VS Code", "Git", "GitHub", "Postman"] },
-  { icon: GitBranch, label: "Practices", items: ["SDLC", "Agile", "Debugging", "Code Reviews"] },
-];
-const EXPERIENCE = {
-  company: "Maverick Ignite Solutions LLP", title: "Associate Software Engineer (Full Time)", period: "May 2025 – Present",
-  bullets: [
-    "Developed backend components and RESTful APIs using Java and Spring Boot and integrated them with the frontend.",
-    "Built and integrated React based UI components for selected modules.",
-    "Performed SQL based data operations, coding, testing, and debugging as part of structured SDLC practice.",
-    "Took part in code reviews and worked closely with senior engineers.",
-  ],
-  recognition: "Received the MaverickIgnite Star and MaverickIgnite Consistent Performer awards.",
-};
-const PROJECTS = [
-  { name: "Maverick Dine", sub: "Restaurant POS & Management Platform",
-    blurb: "A unified platform bringing billing, kitchen operations, inventory, QR menu, and reporting into one system for single and multi outlet businesses.",
-    work: "Built backend modules and RESTful APIs in Java and Spring Boot for billing, orders, and inventory. Developed React UI components and integrated them with backend APIs. Handled SQL data operations and supported testing and debugging.",
-    tags: ["Java", "Spring Boot", "REST APIs", "MySQL", "React"] },
-  { name: "Multi Channel E-Commerce Automation", sub: "Seller Operations Dashboard",
-    blurb: "A platform that connects seller accounts across marketplaces such as Amazon, Flipkart, and Meesho into one dashboard for orders, listings, financials, and account health.",
-    work: "Developed backend services and APIs to collect and unify seller data from marketplace APIs such as Amazon SP-API. Integrated third party APIs for orders, listings, and account data, and built React dashboard screens connected to the backend.",
-    tags: ["Java", "Spring Boot", "Amazon SP-API", "REST APIs", "React"] },
-  { name: "Customer / Business Onboarding ERP", sub: "Enterprise Onboarding Platform",
-    blurb: "An enterprise grade platform with dynamic business workflows, employee and customer lifecycle management, automated invoicing, and secure multi level authentication for faster, traceable onboarding.",
-    work: "Developed RESTful APIs using Java and Spring Boot, performed SQL based data handling, supported API integration, and contributed to coding, testing, debugging, and SDLC best practices.",
-    tags: ["Java", "Spring Boot", "REST APIs", "SQL"] },
-];
-const AWARDS = [
-  { title: "MaverickIgnite Star", org: "Maverick Ignite Solutions LLP", text: "Recognized for strong individual contribution and impact." },
-  { title: "MaverickIgnite Consistent Performer", org: "Maverick Ignite Solutions LLP", text: "Recognized for steady, reliable performance over time." },
-];
-const CERTS = [
-  { name: "Java Full Stack Development & Testing", org: "JSpider", period: "Aug 2024 – Feb 2025",
-    points: [
-      "Comprehensive full stack course covering manual and automation testing.",
-      "Core Java, Collections Framework, JDBC, and UI technologies including JavaScript, HTML, CSS, and React.js.",
-      "SQL using MySQL, Oracle, and PostgreSQL databases.",
-      "Automation testing using Selenium.",
-    ] },
-];
-const EDUCATION = [
-  { level: "BE", school: "Maratha Mandal Engineering College, Belgaum, Karnataka", period: "2020 – 2024", score: "60.44%" },
-  { level: "PUC", school: "Sathish Chougle PU College, Raybag, Karnataka", period: "2018 – 2020", score: "60.00%" },
-  { level: "SSLC", school: "Mohammediya Urdu High School, Kudachi, Karnataka", period: "2017 – 2018", score: "72.00%" },
-];
-const NAV = [
-  { id: "home", label: "Home" }, { id: "about", label: "About" }, { id: "skills", label: "Skills" },
-  { id: "experience", label: "Experience" }, { id: "projects", label: "Projects" }, { id: "awards", label: "Awards" },
-  { id: "certifications", label: "Certifications" }, { id: "education", label: "Education" }, { id: "contact", label: "Contact" },
-];
-
-function Eyebrow({ children }) {
-  return <div className="eyebrow"><span className="eyebrow-dot" />{children}</div>;
-}
-function SectionHead({ eyebrow, title, kicker }) {
-  return (
-    <div className="reveal section-head">
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 className="section-title">{title}</h2>
-      {kicker && <p className="section-kicker">{kicker}</p>}
-    </div>
-  );
-}
-
-function Portfolio() {
-  const [active, setActive] = useState("home");
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const heroRef = useRef(null);
-
-  useEffect(() => {
-    const els = document.querySelectorAll(".reveal");
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); } });
-    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const ids = NAV.map((n) => n.id);
-    const pick = () => {
-      const line = window.scrollY + 140;
-      let current = ids[0];
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        const top = el.getBoundingClientRect().top + window.scrollY;
-        if (top <= line) current = id;
-      }
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
-        current = ids[ids.length - 1];
-      }
-      setActive(current);
+<script>
+"use strict";
+(function () {
+    if (typeof React === "undefined" || typeof ReactDOM === "undefined") {
+        var r = document.getElementById("root");
+        if (r)
+            r.innerHTML = '<div id="root-loading">Could not load required libraries. Please check your internet connection and refresh.</div>';
+        return;
+    }
+    const { useState, useEffect, useRef, useCallback } = React;
+    const ICONS = {
+        "mail": (React.createElement(React.Fragment, null,
+            React.createElement("rect", { x: "2", y: "4", width: "20", height: "16", rx: "2" }),
+            React.createElement("path", { d: "m2 6 10 7 10-7" }))),
+        "phone": (React.createElement("path", { d: "M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" })),
+        "map-pin": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" }),
+            React.createElement("circle", { cx: "12", cy: "10", r: "3" }))),
+        "arrow-up-right": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M7 17 17 7" }),
+            React.createElement("path", { d: "M7 7h10v10" }))),
+        "copy": (React.createElement(React.Fragment, null,
+            React.createElement("rect", { x: "9", y: "9", width: "13", height: "13", rx: "2" }),
+            React.createElement("path", { d: "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" }))),
+        "check": (React.createElement("path", { d: "M20 6 9 17l-5-5" })),
+        "code": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "m18 16 4-4-4-4" }),
+            React.createElement("path", { d: "m6 8-4 4 4 4" }),
+            React.createElement("path", { d: "m14.5 4-5 16" }))),
+        "database": (React.createElement(React.Fragment, null,
+            React.createElement("ellipse", { cx: "12", cy: "5", rx: "9", ry: "3" }),
+            React.createElement("path", { d: "M3 5v14a9 3 0 0 0 18 0V5" }),
+            React.createElement("path", { d: "M3 12a9 3 0 0 0 18 0" }))),
+        "layers": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M12.8 2.2a2 2 0 0 0-1.6 0L2.6 6.1a1 1 0 0 0 0 1.8l8.6 3.9a2 2 0 0 0 1.6 0l8.6-3.9a1 1 0 0 0 0-1.8z" }),
+            React.createElement("path", { d: "m22 12.6-9.2 4.2a2 2 0 0 1-1.6 0L2 12.6" }),
+            React.createElement("path", { d: "m22 17.6-9.2 4.2a2 2 0 0 1-1.6 0L2 17.6" }))),
+        "wrench": (React.createElement("path", { d: "M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" })),
+        "git-branch": (React.createElement(React.Fragment, null,
+            React.createElement("line", { x1: "6", y1: "3", x2: "6", y2: "15" }),
+            React.createElement("circle", { cx: "18", cy: "6", r: "3" }),
+            React.createElement("circle", { cx: "6", cy: "18", r: "3" }),
+            React.createElement("path", { d: "M18 9a9 9 0 0 1-9 9" }))),
+        "flask": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M14 2v6l5.5 9.5a2 2 0 0 1-1.7 3H6.2a2 2 0 0 1-1.7-3L10 8V2" }),
+            React.createElement("path", { d: "M8.5 2h7" }),
+            React.createElement("path", { d: "M7 16h10" }))),
+        "workflow": (React.createElement(React.Fragment, null,
+            React.createElement("rect", { x: "3", y: "3", width: "7", height: "7", rx: "1.5" }),
+            React.createElement("rect", { x: "14", y: "14", width: "7", height: "7", rx: "1.5" }),
+            React.createElement("path", { d: "M10 6.5h4a3 3 0 0 1 3 3V14" }))),
+        "award": (React.createElement(React.Fragment, null,
+            React.createElement("circle", { cx: "12", cy: "8", r: "6" }),
+            React.createElement("path", { d: "M8.2 13.9 7 22l5-3 5 3-1.2-8.1" }))),
+        "trophy": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M6 9H4.5a2.5 2.5 0 0 1 0-5H6" }),
+            React.createElement("path", { d: "M18 9h1.5a2.5 2.5 0 0 0 0-5H18" }),
+            React.createElement("path", { d: "M4 22h16" }),
+            React.createElement("path", { d: "M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.2 7 22" }),
+            React.createElement("path", { d: "M14 14.7V17c0 .6.5 1 1 1.2 1.1.6 2 2 2 3.8" }),
+            React.createElement("path", { d: "M18 2H6v7a6 6 0 0 0 12 0z" }))),
+        "grad-cap": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M22 10 12 5 2 10l10 5z" }),
+            React.createElement("path", { d: "M6 12v5c0 1 2 3 6 3s6-2 6-3v-5" }),
+            React.createElement("path", { d: "M22 10v6" }))),
+        "badge-check": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76z" }),
+            React.createElement("path", { d: "m9 12 2 2 4-4" }))),
+        "briefcase": (React.createElement(React.Fragment, null,
+            React.createElement("rect", { x: "2", y: "7", width: "20", height: "14", rx: "2" }),
+            React.createElement("path", { d: "M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" }))),
+        "sparkles": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z" }),
+            React.createElement("path", { d: "M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" }))),
+        "menu": (React.createElement(React.Fragment, null,
+            React.createElement("line", { x1: "4", y1: "6", x2: "20", y2: "6" }),
+            React.createElement("line", { x1: "4", y1: "12", x2: "20", y2: "12" }),
+            React.createElement("line", { x1: "4", y1: "18", x2: "20", y2: "18" }))),
+        "x": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M18 6 6 18" }),
+            React.createElement("path", { d: "m6 6 12 12" }))),
+        "languages": (React.createElement(React.Fragment, null,
+            React.createElement("circle", { cx: "12", cy: "12", r: "10" }),
+            React.createElement("path", { d: "M2 12h20" }),
+            React.createElement("path", { d: "M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z" }))),
+        "server": (React.createElement(React.Fragment, null,
+            React.createElement("rect", { x: "2", y: "3", width: "20", height: "8", rx: "2" }),
+            React.createElement("rect", { x: "2", y: "13", width: "20", height: "8", rx: "2" }),
+            React.createElement("line", { x1: "6", y1: "7", x2: "6.01", y2: "7" }),
+            React.createElement("line", { x1: "6", y1: "17", x2: "6.01", y2: "17" }))),
+        "monitor": (React.createElement(React.Fragment, null,
+            React.createElement("rect", { x: "2", y: "3", width: "14", height: "10", rx: "2" }),
+            React.createElement("path", { d: "M2 17h11" }),
+            React.createElement("rect", { x: "16", y: "8", width: "6", height: "13", rx: "1.2" }))),
+        "shield-check": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" }),
+            React.createElement("path", { d: "m9 12 2 2 4-4" }))),
+        "github": (React.createElement("path", { d: "M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" })),
+        "linkedin": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" }),
+            React.createElement("rect", { x: "2", y: "9", width: "4", height: "12" }),
+            React.createElement("circle", { cx: "4", cy: "4", r: "2" }))),
+        "file-text": (React.createElement(React.Fragment, null,
+            React.createElement("path", { d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" }),
+            React.createElement("path", { d: "M14 2v6h6" }),
+            React.createElement("path", { d: "M16 13H8" }),
+            React.createElement("path", { d: "M16 17H8" }),
+            React.createElement("path", { d: "M10 9H8" }))),
     };
-    const onScroll = () => { setScrolled(window.scrollY > 24); pick(); };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", pick);
-    onScroll();
-    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", pick); };
-  }, []);
+    function Icon({ name, size = 18, ...rest }) {
+        return (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.75", strokeLinecap: "round", strokeLinejoin: "round", ...rest }, ICONS[name] || null));
+    }
+    const mk = (name) => (props) => React.createElement(Icon, { name: name, ...props });
+    const Mail = mk("mail"), Phone = mk("phone"), MapPin = mk("map-pin"), ArrowUpRight = mk("arrow-up-right"), Copy = mk("copy"), Check = mk("check"), Code2 = mk("code"), Database = mk("database"), Layers = mk("layers"), Wrench = mk("wrench"), GitBranch = mk("git-branch"), FlaskConical = mk("flask"), Workflow = mk("workflow"), Award = mk("award"), Trophy = mk("trophy"), GraduationCap = mk("grad-cap"), BadgeCheck = mk("badge-check"), Briefcase = mk("briefcase"), Sparkles = mk("sparkles"), Menu = mk("menu"), X = mk("x"), Languages = mk("languages"), Server = mk("server"), MonitorSmartphone = mk("monitor"), ShieldCheck = mk("shield-check"), Github = mk("github"), Linkedin = mk("linkedin"), FileText = mk("file-text");
+    const LINKS = {
+        github: "https://github.com/anassanderwale",
+        linkedin: "https://www.linkedin.com/in/anas-sanderwale-2b22b1287",
+        resume: "https://drive.google.com/file/d/1pUex4gJ8AYHWYAnlMAqqj0h3Nq47pXP8/view?usp=drive_link",
+    };
+    const PROFILE = {
+        name: "Anas Sanderwale",
+        role: "Associate Software Engineer",
+        title: "Associate Software Engineer | Java | Spring Boot | SQL | REST APIs",
+        tagline: "Java | Spring Boot | SQL | REST APIs | React",
+        email: "anassanderwale92@gmail.com", phone: "+91 79965 35193", phoneRaw: "+917996535193",
+        location: "Pune, Maharashtra, India", languages: ["English", "Hindi", "Kannada", "Urdu"],
+        heroSummary: "I build reliable backend services and REST APIs with Java and Spring Boot, backed by SQL databases and integrated with React frontends. I have shipped features on production platforms across restaurant POS, e-commerce automation, and ERP domains, with a focus on clean, maintainable code.",
+        summary: "Associate Software Engineer with over 1.6 years of experience building backend services and RESTful APIs using Java and Spring Boot. Skilled in integrating backend systems with React based frontends and working with SQL databases such as MySQL, PostgreSQL, and Oracle. Experienced in delivering features on live products across restaurant, e-commerce, and ERP domains. Focused on writing clean and reliable code and improving application performance.",
+    };
+    const STATS = [
+        { value: "3", label: "Flagship Products" },
+        { value: "8+", label: "Core Technologies" },
+        { value: "2", label: "Performance Awards" },
+    ];
+    const HIGHLIGHTS = [
+        { icon: Server, title: "Backend Engineering", text: "Scalable services and components in Java and Spring Boot for enterprise applications." },
+        { icon: Workflow, title: "API Development", text: "Designing and integrating RESTful APIs for clean communication between systems." },
+        { icon: MonitorSmartphone, title: "Frontend Integration", text: "Wiring backend services to React interfaces to ship complete features." },
+        { icon: ShieldCheck, title: "Quality & Delivery", text: "Structured SDLC and Agile delivery with testing, debugging, and code reviews." },
+    ];
+    const SKILLS = [
+        { icon: Server, label: "Backend", items: ["Java", "Spring Boot", "RESTful APIs", "JDBC"] },
+        { icon: Code2, label: "Frontend", items: ["React.js", "JavaScript", "HTML", "CSS"] },
+        { icon: Database, label: "Database", items: ["MySQL", "PostgreSQL", "Oracle", "SQL"] },
+        { icon: FlaskConical, label: "Testing", items: ["Manual Testing", "Selenium"] },
+        { icon: Wrench, label: "Tools", items: ["IntelliJ IDEA", "VS Code", "Git", "GitHub", "Postman"] },
+        { icon: Workflow, label: "Practices", items: ["SDLC", "Agile", "Debugging", "Code Reviews"] },
+    ];
+    const EXPERIENCE = {
+        company: "Maverick Ignite Solutions LLP", title: "Associate Software Engineer (Full Time)", period: "May 2025 – Present",
+        bullets: [
+            "Designed and developed backend components and RESTful APIs in Java and Spring Boot, integrating them with React frontends to deliver end to end features.",
+            "Modeled and queried relational data across MySQL, PostgreSQL, and Oracle, and refined queries to keep application behavior reliable.",
+            "Owned coding, testing, and debugging within a structured SDLC, contributing to dependable and maintainable releases.",
+            "Collaborated with senior engineers through code reviews and Agile delivery, consistently meeting sprint commitments.",
+        ],
+        recognition: "Recognized with the MaverickIgnite Star and MaverickIgnite Consistent Performer awards for contribution and reliability.",
+    };
+    const PROJECTS = [
+        {
+            name: "Maverick Dine", sub: "Restaurant POS & Management Platform", domain: "Restaurant / Hospitality",
+            blurb: "A unified platform that brings billing, kitchen operations, inventory, QR menu, and reporting into one system for single and multi outlet restaurants.",
+            contribs: [
+                "Built backend modules and REST APIs in Java and Spring Boot for billing, order, and inventory workflows.",
+                "Developed and integrated React UI components for POS and reporting screens.",
+                "Modeled transactional data in SQL and supported testing and debugging across the SDLC.",
+            ],
+            tags: ["Java", "Spring Boot", "REST APIs", "MySQL", "React"],
+        },
+        {
+            name: "Multi Channel E-Commerce Automation", sub: "Seller Operations Dashboard", domain: "E-commerce / SaaS",
+            blurb: "A platform that unifies orders, listings, financials, and account health from marketplaces such as Amazon, Flipkart, and Meesho into a single dashboard.",
+            contribs: [
+                "Developed backend services and APIs to aggregate seller data from marketplace APIs such as Amazon SP-API.",
+                "Integrated third party marketplace APIs for orders, listings, and account data.",
+                "Built React dashboard screens and connected them to backend services for unified reporting.",
+            ],
+            tags: ["Java", "Spring Boot", "Amazon SP-API", "REST APIs", "React"],
+        },
+        {
+            name: "Customer / Business Onboarding ERP", sub: "Enterprise Onboarding Platform", domain: "Enterprise / ERP",
+            blurb: "An enterprise grade platform with dynamic workflows, employee and customer lifecycle management, automated invoicing, and secure multi level authentication.",
+            contribs: [
+                "Developed REST APIs in Java and Spring Boot for onboarding and lifecycle workflows.",
+                "Implemented SQL based data handling and supported API integration across modules.",
+                "Contributed to coding, testing, debugging, and SDLC best practices.",
+            ],
+            tags: ["Java", "Spring Boot", "REST APIs", "SQL"],
+        },
+    ];
+    const AWARDS = [
+        { title: "MaverickIgnite Star", org: "Maverick Ignite Solutions LLP", text: "Recognized for strong individual contribution and impact." },
+        { title: "MaverickIgnite Consistent Performer", org: "Maverick Ignite Solutions LLP", text: "Recognized for steady, reliable performance over time." },
+    ];
+    const CERTS = [
+        { name: "Java Full Stack Development & Testing", org: "JSpider", period: "Aug 2024 – Feb 2025",
+            points: [
+                "Comprehensive full stack course covering manual and automation testing.",
+                "Core Java, Collections Framework, JDBC, and UI technologies including JavaScript, HTML, CSS, and React.js.",
+                "SQL using MySQL, Oracle, and PostgreSQL databases.",
+                "Automation testing using Selenium.",
+            ] },
+    ];
+    const EDUCATION = [
+        { level: "BE", school: "Maratha Mandal Engineering College, Belgaum, Karnataka", period: "2020 – 2024", score: "60.44%" },
+        { level: "PUC", school: "Sathish Chougle PU College, Raybag, Karnataka", period: "2018 – 2020", score: "60.00%" },
+        { level: "SSLC", school: "Mohammediya Urdu High School, Kudachi, Karnataka", period: "2017 – 2018", score: "72.00%" },
+    ];
+    const NAV = [
+        { id: "home", label: "Home" }, { id: "about", label: "About" }, { id: "skills", label: "Skills" },
+        { id: "experience", label: "Experience" }, { id: "projects", label: "Projects" }, { id: "awards", label: "Awards" },
+        { id: "certifications", label: "Certifications" }, { id: "education", label: "Education" }, { id: "contact", label: "Contact" },
+    ];
+    function Eyebrow({ children }) {
+        return React.createElement("div", { className: "eyebrow" },
+            React.createElement("span", { className: "eyebrow-dot" }),
+            children);
+    }
+    function SectionHead({ eyebrow, title, kicker }) {
+        return (React.createElement("div", { className: "reveal section-head" },
+            React.createElement(Eyebrow, null, eyebrow),
+            React.createElement("h2", { className: "section-title" }, title),
+            kicker && React.createElement("p", { className: "section-kicker" }, kicker)));
+    }
+    function Portfolio() {
+        const [active, setActive] = useState("home");
+        const [menuOpen, setMenuOpen] = useState(false);
+        const [scrolled, setScrolled] = useState(false);
+        const [copied, setCopied] = useState(false);
+        const heroRef = useRef(null);
+        useEffect(() => {
+            const els = document.querySelectorAll(".reveal");
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach((e) => { if (e.isIntersecting) {
+                    e.target.classList.add("is-visible");
+                    io.unobserve(e.target);
+                } });
+            }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+            els.forEach((el) => io.observe(el));
+            return () => io.disconnect();
+        }, []);
+        useEffect(() => {
+            const ids = NAV.map((n) => n.id);
+            const pick = () => {
+                const line = window.scrollY + 140;
+                let current = ids[0];
+                for (const id of ids) {
+                    const el = document.getElementById(id);
+                    if (!el)
+                        continue;
+                    const top = el.getBoundingClientRect().top + window.scrollY;
+                    if (top <= line)
+                        current = id;
+                }
+                if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+                    current = ids[ids.length - 1];
+                }
+                setActive(current);
+            };
+            const onScroll = () => { setScrolled(window.scrollY > 24); pick(); };
+            window.addEventListener("scroll", onScroll, { passive: true });
+            window.addEventListener("resize", pick);
+            onScroll();
+            return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", pick); };
+        }, []);
+        const go = useCallback((id) => {
+            setMenuOpen(false);
+            const el = document.getElementById(id);
+            if (el)
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, []);
+        const onHeroMove = (e) => {
+            const el = heroRef.current;
+            if (!el)
+                return;
+            const r = el.getBoundingClientRect();
+            el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+            el.style.setProperty("--my", (e.clientY - r.top) + "px");
+        };
+        const copyEmail = async () => {
+            try {
+                await navigator.clipboard.writeText(PROFILE.email);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1800);
+            }
+            catch (_) { }
+        };
+        return (React.createElement("div", { className: "lg-root" },
+            React.createElement("div", { className: "aurora", "aria-hidden": "true" },
+                React.createElement("span", { className: "orb orb-a" }),
+                React.createElement("span", { className: "orb orb-b" }),
+                React.createElement("span", { className: "orb orb-c" }),
+                React.createElement("div", { className: "grid-veil" })),
+            React.createElement("header", { className: "nav " + (scrolled ? "nav-solid" : "") },
+                React.createElement("div", { className: "nav-inner" },
+                    React.createElement("button", { className: "brand", onClick: () => go("home"), "aria-label": "Home" },
+                        React.createElement("span", { className: "brand-mark" }, "AS"),
+                        React.createElement("span", { className: "brand-name" }, "Anas Sanderwale")),
+                    React.createElement("nav", { className: "nav-links", "aria-label": "Primary" }, NAV.map((n) => (React.createElement("button", { key: n.id, className: "nav-link " + (active === n.id ? "active" : ""), onClick: () => go(n.id) }, n.label)))),
+                    React.createElement("button", { className: "nav-cta", onClick: () => go("contact") },
+                        React.createElement(Mail, { size: 15 }),
+                        " Get in touch"),
+                    React.createElement("button", { className: "hamburger", onClick: () => setMenuOpen((v) => !v), "aria-label": "Menu" }, menuOpen ? React.createElement(X, { size: 20 }) : React.createElement(Menu, { size: 20 })))),
+            menuOpen && (React.createElement("div", { className: "mobile-menu" },
+                NAV.map((n) => React.createElement("button", { key: n.id, className: "mobile-link", onClick: () => go(n.id) }, n.label)),
+                React.createElement("a", { className: "mobile-link primary", href: "mailto:" + PROFILE.email }, "Email me"))),
+            React.createElement("section", { id: "home", className: "hero", ref: heroRef, onMouseMove: onHeroMove },
+                React.createElement("div", { className: "hero-light", "aria-hidden": "true" }),
+                React.createElement("div", { className: "hero-grid" },
+                    React.createElement("div", { className: "hero-copy" },
+                        React.createElement("div", { className: "reveal", style: { transitionDelay: "60ms" } },
+                            React.createElement(Eyebrow, null, "Backend \u00B7 APIs \u00B7 Full-Stack")),
+                        React.createElement("h1", { className: "reveal hero-name", style: { transitionDelay: "130ms" } }, PROFILE.name),
+                        React.createElement("p", { className: "reveal hero-role", style: { transitionDelay: "200ms" } }, PROFILE.title),
+                        React.createElement("p", { className: "reveal hero-tag", style: { transitionDelay: "260ms" } }, PROFILE.tagline),
+                        React.createElement("p", { className: "reveal hero-lede", style: { transitionDelay: "330ms" } }, PROFILE.heroSummary),
+                        React.createElement("div", { className: "reveal hero-actions", style: { transitionDelay: "400ms" } },
+                            React.createElement("a", { className: "btn btn-primary", href: LINKS.resume, target: "_blank", rel: "noreferrer" },
+                                React.createElement(FileText, { size: 16 }),
+                                " View Resume"),
+                            React.createElement("button", { className: "btn btn-ghost", onClick: () => go("contact") },
+                                React.createElement(Mail, { size: 16 }),
+                                " Contact Me"),
+                            React.createElement("a", { className: "btn btn-ghost", href: LINKS.github, target: "_blank", rel: "noreferrer" },
+                                React.createElement(Github, { size: 16 }),
+                                " GitHub"),
+                            React.createElement("a", { className: "btn btn-ghost", href: LINKS.linkedin, target: "_blank", rel: "noreferrer" },
+                                React.createElement(Linkedin, { size: 16 }),
+                                " LinkedIn")),
+                        React.createElement("div", { className: "reveal hero-stats", style: { transitionDelay: "470ms" } }, STATS.map((s) => (React.createElement("div", { className: "stat", key: s.label },
+                            React.createElement("div", { className: "stat-value" }, s.value),
+                            React.createElement("div", { className: "stat-label" }, s.label)))))),
+                    React.createElement("div", { className: "reveal hero-card-wrap", style: { transitionDelay: "240ms" } },
+                        React.createElement("div", { className: "glass hero-card" },
+                            React.createElement("div", { className: "hero-card-top" },
+                                React.createElement("div", { className: "avatar" }, "AS"),
+                                React.createElement("div", null,
+                                    React.createElement("div", { className: "hc-name" }, PROFILE.name),
+                                    React.createElement("div", { className: "hc-role" }, PROFILE.role)),
+                                React.createElement("span", { className: "status" },
+                                    React.createElement("span", { className: "status-dot" }),
+                                    " Open to roles")),
+                            React.createElement("div", { className: "hero-card-list" },
+                                React.createElement("div", { className: "hc-row" },
+                                    React.createElement(MapPin, { size: 15 }),
+                                    " ",
+                                    PROFILE.location),
+                                React.createElement("div", { className: "hc-row" },
+                                    React.createElement(Briefcase, { size: 15 }),
+                                    " Maverick Ignite Solutions LLP"),
+                                React.createElement("div", { className: "hc-row" },
+                                    React.createElement(Languages, { size: 15 }),
+                                    " ",
+                                    PROFILE.languages.join(", "))),
+                            React.createElement("div", { className: "hero-card-tags" }, ["Java", "Spring Boot", "React", "SQL", "REST APIs"].map((t) => React.createElement("span", { className: "chip", key: t }, t))))))),
+            React.createElement("section", { id: "about", className: "section" },
+                React.createElement(SectionHead, { eyebrow: "01 \u2014 Profile", title: "Professional Summary" }),
+                React.createElement("div", { className: "about-grid" },
+                    React.createElement("div", { className: "reveal glass about-card" },
+                        React.createElement("div", { className: "about-spark" },
+                            React.createElement(Sparkles, { size: 20 })),
+                        React.createElement("p", { className: "about-text" }, PROFILE.summary)),
+                    React.createElement("div", { className: "highlight-grid" }, HIGHLIGHTS.map((h, i) => (React.createElement("div", { className: "reveal glass highlight", key: h.title, style: { transitionDelay: (i * 70) + "ms" } },
+                        React.createElement("span", { className: "highlight-icon" },
+                            React.createElement(h.icon, { size: 18 })),
+                        React.createElement("div", { className: "highlight-title" }, h.title),
+                        React.createElement("div", { className: "highlight-text" }, h.text))))))),
+            React.createElement("section", { id: "skills", className: "section" },
+                React.createElement(SectionHead, { eyebrow: "02 \u2014 Toolkit", title: "Skills & Technical Expertise", kicker: "Organized by area, focused on backend and full-stack delivery." }),
+                React.createElement("div", { className: "skills-grid" }, SKILLS.map((s, i) => (React.createElement("div", { className: "reveal glass skill-card", key: s.label, style: { transitionDelay: (i * 60) + "ms" } },
+                    React.createElement("div", { className: "skill-head" },
+                        React.createElement("span", { className: "skill-icon" },
+                            React.createElement(s.icon, { size: 18 })),
+                        React.createElement("span", { className: "skill-label" }, s.label)),
+                    React.createElement("div", { className: "skill-chips" }, s.items.map((it) => React.createElement("span", { className: "chip", key: it }, it)))))))),
+            React.createElement("section", { id: "experience", className: "section" },
+                React.createElement(SectionHead, { eyebrow: "03 \u2014 Where I work", title: "Work Experience" }),
+                React.createElement("div", { className: "reveal glass exp-card" },
+                    React.createElement("div", { className: "exp-head" },
+                        React.createElement("div", { className: "exp-icon" },
+                            React.createElement(Briefcase, { size: 18 })),
+                        React.createElement("div", { className: "exp-headtext" },
+                            React.createElement("div", { className: "exp-company" }, EXPERIENCE.company),
+                            React.createElement("div", { className: "exp-title" }, EXPERIENCE.title)),
+                        React.createElement("div", { className: "exp-period" }, EXPERIENCE.period)),
+                    React.createElement("ul", { className: "exp-list" }, EXPERIENCE.bullets.map((b, i) => React.createElement("li", { key: i },
+                        React.createElement("span", { className: "tick" }),
+                        b))),
+                    React.createElement("div", { className: "exp-reco" },
+                        React.createElement(Trophy, { size: 15 }),
+                        " ",
+                        EXPERIENCE.recognition))),
+            React.createElement("section", { id: "projects", className: "section" },
+                React.createElement(SectionHead, { eyebrow: "04 \u2014 Selected work", title: "Projects", kicker: "Production platforms built at Maverick Ignite Solutions LLP." }),
+                React.createElement("div", { className: "projects-grid" }, PROJECTS.map((p, i) => (React.createElement("article", { className: "reveal glass project", key: p.name, style: { transitionDelay: (i * 80) + "ms" } },
+                    React.createElement("div", { className: "project-meta" },
+                        React.createElement("span", { className: "project-num" }, String(i + 1).padStart(2, "0")),
+                        React.createElement("span", { className: "project-domain" }, p.domain)),
+                    React.createElement("h3", { className: "project-name" }, p.name),
+                    React.createElement("div", { className: "project-sub" }, p.sub),
+                    React.createElement("p", { className: "project-blurb" }, p.blurb),
+                    React.createElement("ul", { className: "project-contribs" }, p.contribs.map((c, j) => React.createElement("li", { key: j },
+                        React.createElement("span", { className: "tick" }),
+                        c))),
+                    React.createElement("div", { className: "project-tags" }, p.tags.map((t) => React.createElement("span", { className: "chip chip-quiet", key: t }, t)))))))),
+            React.createElement("section", { id: "awards", className: "section" },
+                React.createElement(SectionHead, { eyebrow: "05 \u2014 Recognition", title: "Achievements & Awards" }),
+                React.createElement("div", { className: "awards-grid" }, AWARDS.map((a, i) => (React.createElement("div", { className: "reveal glass award", key: a.title, style: { transitionDelay: (i * 80) + "ms" } },
+                    React.createElement("span", { className: "award-icon" },
+                        React.createElement(Award, { size: 20 })),
+                    React.createElement("div", null,
+                        React.createElement("div", { className: "award-title" }, a.title),
+                        React.createElement("div", { className: "award-org" }, a.org),
+                        React.createElement("div", { className: "award-text" }, a.text))))))),
+            React.createElement("section", { id: "certifications", className: "section" },
+                React.createElement(SectionHead, { eyebrow: "06 \u2014 Learning", title: "Certifications & Courses" }),
+                CERTS.map((c) => (React.createElement("div", { className: "reveal glass cert", key: c.name },
+                    React.createElement("div", { className: "cert-head" },
+                        React.createElement("span", { className: "cert-icon" },
+                            React.createElement(BadgeCheck, { size: 18 })),
+                        React.createElement("div", { className: "cert-headtext" },
+                            React.createElement("div", { className: "cert-name" }, c.name),
+                            React.createElement("div", { className: "cert-org" }, c.org)),
+                        React.createElement("div", { className: "cert-period" }, c.period)),
+                    React.createElement("ul", { className: "cert-list" }, c.points.map((pt, i) => React.createElement("li", { key: i },
+                        React.createElement("span", { className: "tick" }),
+                        pt))))))),
+            React.createElement("section", { id: "education", className: "section" },
+                React.createElement(SectionHead, { eyebrow: "07 \u2014 Background", title: "Education" }),
+                React.createElement("div", { className: "edu-timeline" }, EDUCATION.map((e, i) => (React.createElement("div", { className: "reveal edu-row", key: e.level, style: { transitionDelay: (i * 70) + "ms" } },
+                    React.createElement("div", { className: "edu-node" },
+                        React.createElement(GraduationCap, { size: 16 })),
+                    React.createElement("div", { className: "glass edu-card" },
+                        React.createElement("div", { className: "edu-top" },
+                            React.createElement("span", { className: "edu-level" }, e.level),
+                            React.createElement("span", { className: "edu-period" }, e.period)),
+                        React.createElement("div", { className: "edu-school" }, e.school),
+                        React.createElement("div", { className: "edu-score" }, e.score))))))),
+            React.createElement("section", { id: "contact", className: "section" },
+                React.createElement(SectionHead, { eyebrow: "08 \u2014 Say hello", title: "Let's build something", kicker: "Open to Associate / backend and full-stack engineering roles." }),
+                React.createElement("div", { className: "reveal glass contact-card" },
+                    React.createElement("p", { className: "contact-lead" }, "The quickest way to reach me is email, and I am happy to share more about my work and walk through any of the projects above. I usually reply within a day."),
+                    React.createElement("div", { className: "contact-grid" },
+                        React.createElement("a", { className: "contact-item", href: "mailto:" + PROFILE.email },
+                            React.createElement("span", { className: "contact-ic" },
+                                React.createElement(Mail, { size: 18 })),
+                            React.createElement("span", { className: "contact-k" }, "Email"),
+                            React.createElement("span", { className: "contact-v" }, PROFILE.email)),
+                        React.createElement("a", { className: "contact-item", href: "tel:" + PROFILE.phoneRaw },
+                            React.createElement("span", { className: "contact-ic" },
+                                React.createElement(Phone, { size: 18 })),
+                            React.createElement("span", { className: "contact-k" }, "Phone"),
+                            React.createElement("span", { className: "contact-v" }, PROFILE.phone)),
+                        React.createElement("div", { className: "contact-item" },
+                            React.createElement("span", { className: "contact-ic" },
+                                React.createElement(MapPin, { size: 18 })),
+                            React.createElement("span", { className: "contact-k" }, "Location"),
+                            React.createElement("span", { className: "contact-v" }, PROFILE.location))),
+                    React.createElement("div", { className: "contact-actions" },
+                        React.createElement("a", { className: "btn btn-primary", href: "mailto:" + PROFILE.email },
+                            React.createElement(Mail, { size: 16 }),
+                            " Email me"),
+                        React.createElement("a", { className: "btn btn-ghost", href: LINKS.resume, target: "_blank", rel: "noreferrer" },
+                            React.createElement(FileText, { size: 16 }),
+                            " View Resume"),
+                        React.createElement("a", { className: "btn btn-ghost", href: LINKS.github, target: "_blank", rel: "noreferrer" },
+                            React.createElement(Github, { size: 16 }),
+                            " GitHub"),
+                        React.createElement("a", { className: "btn btn-ghost", href: LINKS.linkedin, target: "_blank", rel: "noreferrer" },
+                            React.createElement(Linkedin, { size: 16 }),
+                            " LinkedIn"),
+                        React.createElement("button", { className: "btn btn-ghost", onClick: copyEmail }, copied ? React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 8 } },
+                            React.createElement(Check, { size: 16 }),
+                            " Copied") : React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 8 } },
+                            React.createElement(Copy, { size: 16 }),
+                            " Copy email"))))),
+            React.createElement("footer", { className: "footer" },
+                React.createElement("div", { className: "footer-inner" },
+                    React.createElement("span", null,
+                        "\u00A9 ",
+                        new Date().getFullYear(),
+                        " ",
+                        PROFILE.name),
+                    React.createElement("span", { className: "footer-built" }, "Designed & built with care")))));
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(Portfolio, null));
+})();
 
-  const go = useCallback((id) => {
-    setMenuOpen(false);
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
-  const onHeroMove = (e) => {
-    const el = heroRef.current; if (!el) return;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty("--mx", (e.clientX - r.left) + "px");
-    el.style.setProperty("--my", (e.clientY - r.top) + "px");
-  };
-  const copyEmail = async () => {
-    try { await navigator.clipboard.writeText(PROFILE.email); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch (_) {}
-  };
-
-  return (
-    <div className="lg-root">
-      <div className="aurora" aria-hidden="true">
-        <span className="orb orb-a" /><span className="orb orb-b" /><span className="orb orb-c" /><div className="grid-veil" />
-      </div>
-
-      <header className={"nav " + (scrolled ? "nav-solid" : "")}>
-        <div className="nav-inner">
-          <button className="brand" onClick={() => go("home")} aria-label="Home">
-            <span className="brand-mark">AS</span><span className="brand-name">Anas Sanderwale</span>
-          </button>
-          <nav className="nav-links" aria-label="Primary">
-            {NAV.map((n) => (
-              <button key={n.id} className={"nav-link " + (active === n.id ? "active" : "")} onClick={() => go(n.id)}>{n.label}</button>
-            ))}
-          </nav>
-          <button className="nav-cta" onClick={() => go("contact")}><Mail size={15} /> Get in touch</button>
-          <button className="hamburger" onClick={() => setMenuOpen((v) => !v)} aria-label="Menu">{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
-        </div>
-      </header>
-
-      {menuOpen && (
-        <div className="mobile-menu">
-          {NAV.map((n) => <button key={n.id} className="mobile-link" onClick={() => go(n.id)}>{n.label}</button>)}
-          <a className="mobile-link primary" href={"mailto:" + PROFILE.email}>Email me</a>
-        </div>
-      )}
-
-      <section id="home" className="hero" ref={heroRef} onMouseMove={onHeroMove}>
-        <div className="hero-light" aria-hidden="true" />
-        <div className="hero-grid">
-          <div className="hero-copy">
-            <div className="reveal" style={{ transitionDelay: "60ms" }}><Eyebrow>Backend · APIs · Full-Stack</Eyebrow></div>
-            <h1 className="reveal hero-name" style={{ transitionDelay: "130ms" }}>{PROFILE.name}</h1>
-            <p className="reveal hero-role" style={{ transitionDelay: "200ms" }}>{PROFILE.role}</p>
-            <p className="reveal hero-tag" style={{ transitionDelay: "260ms" }}>{PROFILE.tagline}</p>
-            <p className="reveal hero-lede" style={{ transitionDelay: "330ms" }}>I build reliable backend services and clean APIs in Java and Spring Boot, and connect them to polished React interfaces.</p>
-            <div className="reveal hero-actions" style={{ transitionDelay: "400ms" }}>
-              <button className="btn btn-primary" onClick={() => go("projects")}>View projects <ArrowUpRight size={16} /></button>
-              <button className="btn btn-ghost" onClick={() => go("contact")}>Get in touch</button>
-            </div>
-            <div className="reveal hero-stats" style={{ transitionDelay: "470ms" }}>
-              {STATS.map((s) => (<div className="stat" key={s.label}><div className="stat-value">{s.value}</div><div className="stat-label">{s.label}</div></div>))}
-            </div>
-          </div>
-          <div className="reveal hero-card-wrap" style={{ transitionDelay: "240ms" }}>
-            <div className="glass hero-card">
-              <div className="hero-card-top">
-                <div className="avatar">AS</div>
-                <div><div className="hc-name">{PROFILE.name}</div><div className="hc-role">{PROFILE.role}</div></div>
-                <span className="status"><span className="status-dot" /> Open to roles</span>
-              </div>
-              <div className="hero-card-list">
-                <div className="hc-row"><MapPin size={15} /> {PROFILE.location}</div>
-                <div className="hc-row"><Briefcase size={15} /> Maverick Ignite Solutions LLP</div>
-                <div className="hc-row"><Languages size={15} /> {PROFILE.languages.join(", ")}</div>
-              </div>
-              <div className="hero-card-tags">
-                {["Java", "Spring Boot", "React", "SQL", "REST APIs"].map((t) => <span className="chip" key={t}>{t}</span>)}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="about" className="section">
-        <SectionHead eyebrow="01 — Profile" title="Professional Summary" />
-        <div className="about-grid">
-          <div className="reveal glass about-card">
-            <div className="about-spark"><Sparkles size={20} /></div>
-            <p className="about-text">{PROFILE.summary}</p>
-          </div>
-          <div className="highlight-grid">
-            {HIGHLIGHTS.map((h, i) => (
-              <div className="reveal glass highlight" key={h.title} style={{ transitionDelay: (i * 70) + "ms" }}>
-                <span className="highlight-icon"><h.icon size={18} /></span>
-                <div className="highlight-title">{h.title}</div>
-                <div className="highlight-text">{h.text}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="skills" className="section">
-        <SectionHead eyebrow="02 — Toolkit" title="Skills & Technical Expertise" kicker="The stack I use to design, build, and ship dependable software." />
-        <div className="skills-grid">
-          {SKILLS.map((s, i) => (
-            <div className="reveal glass skill-card" key={s.label} style={{ transitionDelay: (i * 60) + "ms" }}>
-              <div className="skill-head"><span className="skill-icon"><s.icon size={18} /></span><span className="skill-label">{s.label}</span></div>
-              <div className="skill-chips">{s.items.map((it) => <span className="chip" key={it}>{it}</span>)}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="experience" className="section">
-        <SectionHead eyebrow="03 — Where I work" title="Work Experience" />
-        <div className="reveal glass exp-card">
-          <div className="exp-head">
-            <div className="exp-icon"><Briefcase size={18} /></div>
-            <div className="exp-headtext"><div className="exp-company">{EXPERIENCE.company}</div><div className="exp-title">{EXPERIENCE.title}</div></div>
-            <div className="exp-period">{EXPERIENCE.period}</div>
-          </div>
-          <ul className="exp-list">{EXPERIENCE.bullets.map((b, i) => <li key={i}><span className="tick" />{b}</li>)}</ul>
-          <div className="exp-reco"><Trophy size={15} /> {EXPERIENCE.recognition}</div>
-        </div>
-      </section>
-
-      <section id="projects" className="section">
-        <SectionHead eyebrow="04 — Selected work" title="Projects" kicker="Production platforms built at Maverick Ignite Solutions LLP." />
-        <div className="projects-grid">
-          {PROJECTS.map((p, i) => (
-            <article className="reveal glass project" key={p.name} style={{ transitionDelay: (i * 80) + "ms" }}>
-              <div className="project-num">{String(i + 1).padStart(2, "0")}</div>
-              <h3 className="project-name">{p.name}</h3>
-              <div className="project-sub">{p.sub}</div>
-              <p className="project-blurb">{p.blurb}</p>
-              <p className="project-work">{p.work}</p>
-              <div className="project-tags">{p.tags.map((t) => <span className="chip chip-quiet" key={t}>{t}</span>)}</div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="awards" className="section">
-        <SectionHead eyebrow="05 — Recognition" title="Achievements & Awards" />
-        <div className="awards-grid">
-          {AWARDS.map((a, i) => (
-            <div className="reveal glass award" key={a.title} style={{ transitionDelay: (i * 80) + "ms" }}>
-              <span className="award-icon"><Award size={20} /></span>
-              <div><div className="award-title">{a.title}</div><div className="award-org">{a.org}</div><div className="award-text">{a.text}</div></div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="certifications" className="section">
-        <SectionHead eyebrow="06 — Learning" title="Certifications & Courses" />
-        {CERTS.map((c) => (
-          <div className="reveal glass cert" key={c.name}>
-            <div className="cert-head">
-              <span className="cert-icon"><BadgeCheck size={18} /></span>
-              <div className="cert-headtext"><div className="cert-name">{c.name}</div><div className="cert-org">{c.org}</div></div>
-              <div className="cert-period">{c.period}</div>
-            </div>
-            <ul className="cert-list">{c.points.map((pt, i) => <li key={i}><span className="tick" />{pt}</li>)}</ul>
-          </div>
-        ))}
-      </section>
-
-      <section id="education" className="section">
-        <SectionHead eyebrow="07 — Background" title="Education" />
-        <div className="edu-timeline">
-          {EDUCATION.map((e, i) => (
-            <div className="reveal edu-row" key={e.level} style={{ transitionDelay: (i * 70) + "ms" }}>
-              <div className="edu-node"><GraduationCap size={16} /></div>
-              <div className="glass edu-card">
-                <div className="edu-top"><span className="edu-level">{e.level}</span><span className="edu-period">{e.period}</span></div>
-                <div className="edu-school">{e.school}</div>
-                <div className="edu-score">{e.score}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="contact" className="section">
-        <SectionHead eyebrow="08 — Say hello" title="Let's build something" kicker="Available for backend and full-stack engineering roles." />
-        <div className="reveal glass contact-card">
-          <div className="contact-grid">
-            <a className="contact-item" href={"mailto:" + PROFILE.email}>
-              <span className="contact-ic"><Mail size={18} /></span><span className="contact-k">Email</span><span className="contact-v">{PROFILE.email}</span>
-            </a>
-            <a className="contact-item" href={"tel:" + PROFILE.phoneRaw}>
-              <span className="contact-ic"><Phone size={18} /></span><span className="contact-k">Phone</span><span className="contact-v">{PROFILE.phone}</span>
-            </a>
-            <div className="contact-item">
-              <span className="contact-ic"><MapPin size={18} /></span><span className="contact-k">Location</span><span className="contact-v">{PROFILE.location}</span>
-            </div>
-          </div>
-          <div className="contact-actions">
-            <a className="btn btn-primary" href={"mailto:" + PROFILE.email}><Mail size={16} /> Email me</a>
-            <button className="btn btn-ghost" onClick={copyEmail}>{copied ? <span style={{display:"inline-flex",alignItems:"center",gap:8}}><Check size={16} /> Copied</span> : <span style={{display:"inline-flex",alignItems:"center",gap:8}}><Copy size={16} /> Copy email</span>}</button>
-            <a className="btn btn-ghost" href={"tel:" + PROFILE.phoneRaw}><Phone size={16} /> Call</a>
-          </div>
-        </div>
-      </section>
-
-      <footer className="footer">
-        <div className="footer-inner"><span>© {new Date().getFullYear()} {PROFILE.name}</span><span className="footer-built">Designed &amp; built with care</span></div>
-      </footer>
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<Portfolio />);
 </script>
 </body>
 </html>
